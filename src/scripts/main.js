@@ -2,7 +2,6 @@
 
 const tableHeader = document.querySelector('thead');
 const tableBody = document.querySelector('tbody');
-const bodyRows = tableBody.querySelectorAll('tr');
 
 const sortingColumns = function (direction, rows, header) {
   const tr = header.closest('tr');
@@ -66,6 +65,8 @@ tableHeader.addEventListener('click', (e) => {
     }
   }
 
+  const bodyRows = tableBody.querySelectorAll('tr');
+
   sortedRows = sortingColumns(lastDirection, bodyRows, currTh);
   lastHeader = currTh;
   sortedRows.forEach((row) => tableBody.append(row));
@@ -73,9 +74,8 @@ tableHeader.addEventListener('click', (e) => {
 
 let currRow = null;
 
-[...bodyRows].forEach((row) => {
-  row.addEventListener('click', (e) => {
-    const selectedRow = e.target.closest('tr');
+tableBody.addEventListener('click', (e) => {
+  const selectedRow = e.target.closest('tr');
 
     if (!selectedRow) {
       return;
@@ -88,7 +88,6 @@ let currRow = null;
     selectedRow.classList.add('active');
     currRow = selectedRow;
   });
-});
 
 const form = document.createElement('form');
 
@@ -153,6 +152,10 @@ const london = document.createElement('option');
 
 london.textContent = 'London';
 officeSelect.append(london);
+
+const newYork = document.createElement('option');
+newYork.textContent = 'New York';
+officeSelect.append(newYork);
 
 const edinburgh = document.createElement('option');
 
@@ -314,10 +317,16 @@ form.addEventListener('submit', (e) => {
   form.reset();
 });
 
+let editingCell = null;
+
 tableBody.addEventListener('dblclick', (e) => {
   const cellToEdit = e.target.closest('td');
 
   if (!cellToEdit) {
+    return;
+  }
+
+   if (editingCell) {
     return;
   }
 
@@ -335,6 +344,7 @@ tableBody.addEventListener('dblclick', (e) => {
   function saveValue() {
     cellToEdit.textContent = cellInp.value || lastValue;
     cellInp.remove();
+    editingCell = null;
   }
 
   cellInp.addEventListener('keydown', (evnt) => {
